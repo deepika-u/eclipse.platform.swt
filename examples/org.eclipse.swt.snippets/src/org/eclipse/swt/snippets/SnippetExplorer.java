@@ -194,7 +194,7 @@ public class SnippetExplorer {
 	 */
 	private static boolean canRunCommand(String command) {
 		try {
-			final Process p = Runtime.getRuntime().exec(command);
+			final Process p = Runtime.getRuntime().exec(new String[] {command});
 			p.waitFor(150, TimeUnit.MILLISECONDS);
 			if (p.isAlive()) {
 				p.destroy();
@@ -1042,7 +1042,7 @@ public class SnippetExplorer {
 				if (!launchedSnippets.isEmpty()) {
 					System.err.println("Some Snippets are still running:");
 					for (Thread t : launchedSnippets) {
-						System.err.println("    " + t.getName() + " (ThreadId: " + t.getId() + ")");
+						System.err.println("    " + t.getName() + " (ThreadId: " + t.threadId() + ")");
 						final Display d = Display.findDisplay(t);
 						if (d != null && !d.isDisposed()) {
 							d.syncExec(d::dispose);

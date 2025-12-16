@@ -4849,9 +4849,9 @@ void flushQueueOnDnd() {
 	// to determine DnD threshold.
 	// This is to preserve backwards Cocoa/Win32 compatibility.
 	Event mouseDownEvent = dragDetectionQueue.getFirst();
-	mouseDownEvent.data = Boolean.valueOf(true); // force send MouseDown to avoid subsequent MouseMove before MouseDown.
+	mouseDownEvent.data = null;
 	dragDetectionQueue = null;
-	sendOrPost(SWT.MouseDown, mouseDownEvent);
+	sendEvent(SWT.MouseDown, mouseDownEvent);
 }
 
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
@@ -5187,21 +5187,17 @@ private void _setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	boolean set = false;
 	GdkRGBA rgba = null;
 	if (color != null) {
 		rgba = color.handle;
 		backgroundAlpha = color.getAlpha();
 	}
-	set = true;
-	if (set) {
-		if (color == null) {
-			state &= ~BACKGROUND;
-		} else {
-			state |= BACKGROUND;
-		}
-		setBackgroundGdkRGBA (rgba);
+	if (color == null) {
+		state &= ~BACKGROUND;
+	} else {
+		state |= BACKGROUND;
 	}
+	setBackgroundGdkRGBA (rgba);
 	redrawChildren ();
 }
 
@@ -5258,7 +5254,6 @@ void setBackgroundGdkRGBA (long handle, GdkRGBA rgba) {
 
 	long context = GTK.gtk_widget_get_style_context(handle);
 	setBackgroundGdkRGBA(context, handle, rgba);
-	if (!GTK.GTK4) GTK3.gtk_style_context_invalidate(context);
 }
 /**
  * Sets the receiver's background image to the image specified
@@ -5540,8 +5535,7 @@ public void setForeground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	boolean set = false;
-	set = !getForeground().equals(color);
+	boolean set = !getForeground().equals(color);
 	if (set) {
 		if (color == null) {
 			state &= ~FOREGROUND;
